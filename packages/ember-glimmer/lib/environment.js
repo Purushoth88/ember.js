@@ -344,7 +344,22 @@ export default class Environment extends GlimmerEnvironment {
   }
 
   didDestroy(destroyable) {
+    this._removalQueue = [];
+
     destroyable.destroy();
+
+    this._clearPendingRemovals();
+  }
+
+  _clearPendingRemovals() {
+    let removals = this._removalQueue;
+    for (let i = 0; i < removals.length; i++) {
+      let itemToBeRemoved = removals[i];
+
+      itemToBeRemoved.renderer.remove(itemToBeRemoved);
+    }
+
+    this._removalQueue = null;
   }
 }
 

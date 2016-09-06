@@ -194,10 +194,18 @@ export class Renderer {
     delete this._viewRegistry[getViewId(view)];
   }
 
-  remove(view) {
+  scheduleRemoval(view) {
     view.trigger('willDestroyElement');
     view.trigger('willClearRender');
+
+    this._env._removalQueue.push(view);
+  }
+
+  remove(view) {
     view._transitionTo('destroying');
+
+    view.element = null;
+    view.trigger('didDestroyElement');
 
     let roots = this._roots;
 
@@ -304,11 +312,16 @@ export class Renderer {
   }
 
   _clearAllRoots() {
+    this._env._removalQueue = [];
+
     let roots = this._roots;
     for (let i = 0; i < roots.length; i++) {
       let root = roots[i];
       root.destroy();
     }
+
+    this._env._clearPendingRemovals();
+
     this._roots = null;
 
     if (roots.length) {

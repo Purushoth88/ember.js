@@ -13,7 +13,8 @@ import {
   runInDebug,
   assign,
   get,
-  _instrumentStart
+  _instrumentStart,
+  run
 } from 'ember-metal';
 import processArgs from '../utils/process-args';
 import {
@@ -139,6 +140,12 @@ class ComponentStateBucket {
     this.args = args;
     this.argsRevision = args.tag.value();
     this.finalizer = finalizer;
+  }
+
+  destroy() {
+    let { component } = this;
+
+    component.renderer.scheduleRemoval(component);
   }
 
   finalize() {
@@ -347,8 +354,8 @@ class CurlyComponentManager {
     component.trigger('didRender');
   }
 
-  getDestructor({ component }) {
-    return component;
+  getDestructor(stateBucket) {
+    return stateBucket;
   }
 }
 

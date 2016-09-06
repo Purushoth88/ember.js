@@ -29,10 +29,6 @@ assign(hasElement, {
     view.renderer.rerender(view);
   },
 
-  destroy(view) {
-    view.renderer.remove(view, true);
-  },
-
   // Handle events from `Ember.EventDispatcher`
   handleEvent(view, eventName, event) {
     if (view.has(eventName)) {
